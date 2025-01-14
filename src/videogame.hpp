@@ -43,6 +43,7 @@ public:
     void setGenre(const std::string& newGenre) { genre = newGenre; }
     void setPrice(int newPrice) { price = newPrice; }
     void setAgeRating(const std::string& newAgeRating) { ageRating = newAgeRating; }
+    static void setVideoGameCount(int count) { videoGameCount = count; }
 
     // Method to display video game details
     void display() const {

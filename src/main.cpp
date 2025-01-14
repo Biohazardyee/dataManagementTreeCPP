@@ -70,8 +70,6 @@ int main() {
 
     // Display all games after loading from the file
     std::cout << "Games loaded from file:\n";
-    tree.displayAll();
-
     int choice;
     bool valid_input;
 
