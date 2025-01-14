@@ -9,3 +9,10 @@
 
 - The tree should be self-balancing!
   - what data should you store inside it? 
+
+## Important Notes
+
+You should know that the coding was made under these conditions:
+![1736863710970](image/README/1736863710970.png)
+
+(We like to suffer)
