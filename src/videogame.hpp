@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <set>
 
 class VideoGame {
 private:
@@ -13,7 +14,9 @@ private:
     int price;
     std::string ageRating;
     int id;
+
     static int videoGameCount;  // Static member to generate unique IDs
+    static std::set<int> deletedIds; // Set to store deleted IDs
 
 public:
     // Default constructor
@@ -22,7 +25,14 @@ public:
     // Parameterized constructor with auto-generated ID
     VideoGame(std::string name, int year, std::string genre, int price, std::string ageRating)
         : name(name), year(year), genre(genre), price(price), ageRating(ageRating) {
-        id = ++videoGameCount;  // Increment and assign unique ID
+        if (!deletedIds.empty()) {
+            // Reuse a deleted ID
+            id = *deletedIds.begin();
+            deletedIds.erase(deletedIds.begin());
+        } else {
+            // Assign the next available ID
+            id = ++videoGameCount;
+        }
     }
 
     // Parameterized constructor with user-defined ID (optional)
@@ -43,7 +53,25 @@ public:
     void setGenre(const std::string& newGenre) { genre = newGenre; }
     void setPrice(int newPrice) { price = newPrice; }
     void setAgeRating(const std::string& newAgeRating) { ageRating = newAgeRating; }
+
     static void setVideoGameCount(int count) { videoGameCount = count; }
+
+    // Method to delete a game and free up its ID
+    static void deleteId(int id) {
+        deletedIds.insert(id); // Add the deleted ID to the set
+        if (id == videoGameCount) {
+            // Decrement videoGameCount if the deleted ID is the highest ID
+            --videoGameCount;
+            // After deletion, check if there are other deleted IDs to reuse
+            if (!deletedIds.empty()) {
+                // Find the largest available deleted ID and set it as the new highest ID
+                int highestDeletedId = *deletedIds.rbegin();
+                if (highestDeletedId > videoGameCount) {
+                    videoGameCount = highestDeletedId;
+                }
+            }
+        }
+    }
 
     // Method to display video game details
     void display() const {
@@ -56,7 +84,8 @@ public:
     }
 };
 
-// Initialize static member
+// Initialize static members
 int VideoGame::videoGameCount = 0;
+std::set<int> VideoGame::deletedIds;  // Initialize the set of deleted IDs
 
 #endif // VIDEOGAME_HPP

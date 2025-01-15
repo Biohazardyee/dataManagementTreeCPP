@@ -15,11 +15,15 @@ struct TreeNode
 
     // Constructor to initialize a node with a video game
     TreeNode(const VideoGame &game) : game(game), left(nullptr), right(nullptr), height(1) {}
-
 };
 
 class AVLTree
 {
+public:
+    void remove(int id)
+    {
+        root = deleteNode(root, id);
+    }
 private:
     TreeNode *root;
 
@@ -64,6 +68,106 @@ private:
 
         return y;
     }
+
+    // Function to find the node with the minimum value in the tree
+    TreeNode *findMin(TreeNode *node)
+    {
+        while (node->left != nullptr)
+        {
+            node = node->left;
+        }
+        return node;
+    }
+
+    // Recursive function to delete a node
+    TreeNode *deleteNode(TreeNode *node, int id)
+    {
+        if (node == nullptr)
+        {
+            std::cout << "Game with ID " << id << " not found!\n";
+            return node;
+        }
+
+        // Search for the node to delete
+        if (id < node->game.getId())
+        {
+            node->left = deleteNode(node->left, id);
+        }
+        else if (id > node->game.getId())
+        {
+            node->right = deleteNode(node->right, id);
+        }
+        else
+        {
+            // Node found
+            if (node->left == nullptr || node->right == nullptr)
+            {
+                // One or zero child case
+                TreeNode *temp = node->left ? node->left : node->right;
+
+                if (temp == nullptr)
+                {
+                    // No child case
+                    temp = node;
+                    node = nullptr;
+                }
+                else
+                {
+                    // One child case
+                    *node = *temp;
+                }
+                delete temp;
+            }
+            else
+            {
+                // Node with two children
+                TreeNode *temp = findMin(node->right);
+                node->game = temp->game;
+                node->right = deleteNode(node->right, temp->game.getId());
+            }
+        }
+
+        if (node == nullptr)
+        {
+            return node;
+        }
+
+        // Update height
+        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+
+        // Rebalance the tree
+        int balance = getBalanceFactor(node);
+
+        // Left Left Case
+        if (balance > 1 && getBalanceFactor(node->left) >= 0)
+        {
+            return rightRotate(node);
+        }
+
+        // Left Right Case
+        if (balance > 1 && getBalanceFactor(node->left) < 0)
+        {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right Right Case
+        if (balance < -1 && getBalanceFactor(node->right) <= 0)
+        {
+            return leftRotate(node);
+        }
+
+        // Right Left Case
+        if (balance < -1 && getBalanceFactor(node->right) > 0)
+        {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+
+    
 
     // Recursive function to insert a new video game into the tree
     TreeNode *insert(TreeNode *node, const VideoGame &game)
@@ -172,6 +276,13 @@ public:
         root = insert(root, game);
     }
 
+    void remove(const VideoGame &game)
+    {
+        root = deleteNode(root, game.getId());
+    }
+
+
+
     // Public function to search for a game by ID
     void search(int id)
     {
@@ -208,44 +319,48 @@ public:
     }
 
     // Helper function to load games from file into the tree
-    void loadFromFile(const std::string &filename) {
-    std::ifstream file(filename);
+    void loadFromFile(const std::string &filename)
+    {
+        std::ifstream file(filename);
 
-    if (!file) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return;
-    }
-
-    int id, year;
-    std::string name, genre, ageRating;
-    float price;
-    int highestId = 0;
-
-    while (file >> id) {
-        file.ignore(); // Ignore the tab or space after ID
-        std::getline(file, name, '\t');
-        file >> year;
-        file.ignore(); // Ignore tab
-        std::getline(file, genre, '\t');
-        file >> price;
-        file.ignore(); // Ignore tab
-        std::getline(file, ageRating);
-
-        VideoGame game(name, year, genre, price, ageRating, id);
-        insert(game);
-
-        // Update highest ID found
-        if (id > highestId) {
-            highestId = id;
+        if (!file)
+        {
+            std::cerr << "Error opening file: " << filename << std::endl;
+            return;
         }
+
+        int id, year;
+        std::string name, genre, ageRating;
+        float price;
+        int highestId = 0;
+
+        while (file >> id)
+        {
+            file.ignore(); // Ignore the tab or space after ID
+            std::getline(file, name, '\t');
+            file >> year;
+            file.ignore(); // Ignore tab
+            std::getline(file, genre, '\t');
+            file >> price;
+            file.ignore(); // Ignore tab
+            std::getline(file, ageRating);
+
+            VideoGame game(name, year, genre, price, ageRating, id);
+            insert(game);
+
+            // Update highest ID found
+            if (id > highestId)
+            {
+                highestId = id;
+            }
+        }
+
+        // Update static video game count to avoid ID conflicts
+        VideoGame::setVideoGameCount(highestId);
+
+        file.close();
+        std::cout << "\033[1;32mGames loaded successfully from the file!\033[0m\n";
     }
-
-    // Update static video game count to avoid ID conflicts
-    VideoGame::setVideoGameCount(highestId);
-
-    file.close();
-    std::cout << "\033[1;32mGames loaded successfully from the file!\033[0m\n";
-}
 };
 
 #endif
