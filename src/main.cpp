@@ -68,12 +68,14 @@ int main() {
     // Load games from the file into the AVL tree
     loadGamesFromFile(tree);
 
-    // Display all games after loading from the file
-    std::cout << "Games loaded from file:\n";
+    // Display message after loading from file
+    std::cout << "\033[1;32mGames loaded from file successfully!\033[0m\n";
+
     int choice;
-    bool valid_input;
+    bool exitProgram = false;
 
     do {
+        // Display menu
         std::cout << "                  _._______  \n";  
         std::cout << "                 | _______ | \n";
         std::cout << "                 ||,-----.|| \n";
@@ -89,49 +91,53 @@ int main() {
         std::cout << "\033[36m========================================\033[0m\n";
         std::cout << "\033[33m1. Add Video Game\n";
         std::cout << "2. Search Video Game by ID\n";
-        std::cout << "3. Display All Video Games\n";
-        std::cout << "4. Save Games to File\n";
-        std::cout << "5. Exit\033[0m\n";
+        std::cout << "3. Delete Video Game by ID\n";
+        std::cout << "4. Display All Video Games\n";
+        std::cout << "5. Save Games to File\n";
+        std::cout << "6. Exit\033[0m\n";
         std::cout << "\033[36m========================================\033[0m\n";
         std::cout << "\033[34mEnter your choice: \033[0m";
 
-        // Validate user input for menu choice
-        valid_input = false;
-        while (!valid_input) {
-            std::cin >> choice;
-
-            if (std::cin.fail()) {
-                std::cin.clear(); // Clear the error flag
-                std::cout << "\033[1;31mInvalid input. Please enter a valid number.\033[0m\n";
-                std::cout << "\033[34mEnter your choice: \033[0m";
-            } else {
-                valid_input = true;
-            }
+        // Get user input and validate
+        std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear(); // Clear the error flag
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+            std::cout << "\033[1;31mInvalid input. Please enter a number between 1 and 6.\033[0m\n";
+            continue;
         }
 
         std::cout << "\n";  // Add a blank line for better spacing
 
         switch (choice) {
             case 1:
-                addVideoGame(tree);  // Add a new video game
+                addVideoGame(tree);
                 break;
             case 2:
-                searchById(tree);    // Search video game by ID
+                searchById(tree);
                 break;
             case 3:
-                displayAllGames(tree);  // Display all video games
+                int idToRemove;
+                std::cout << "Enter the game ID to delete: ";
+                std::cin >> idToRemove;
+                tree.remove(idToRemove);
+                std::cout << "\033[1;32mGame with ID " << idToRemove << " removed successfully!\033[0m\n";
                 break;
             case 4:
-                saveAllGamesToFile(tree);  // Save all video games to file
+                displayAllGames(tree);
                 break;
             case 5:
+                saveAllGamesToFile(tree);
+                break;
+            case 6:
                 std::cout << "\033[1;32mExiting the program. Goodbye!\033[0m\n";
+                exitProgram = true;
                 break;
             default:
-                std::cout << "\033[1;31mInvalid choice. Please try again.\033[0m\n";
+                std::cout << "\033[1;31mInvalid choice. Please enter a number between 1 and 6.\033[0m\n";
         }
 
-    } while (choice != 5);
+    } while (!exitProgram);
 
     return 0;
 }
