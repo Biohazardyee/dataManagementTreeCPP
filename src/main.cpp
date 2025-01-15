@@ -85,8 +85,8 @@ int main() {
         std::cout << "                 |`-------'| \n";
         std::cout << "                 | +     O | \n";
         std::cout << "                 |      O  | \n";
-        std::cout << "                 | / /  ##/ \n";
-        std::cout << "                  `-------   \n";
+        std::cout << "                 | / /  ## | \n";
+        std::cout << "                  `--------'  \n";
         std::cout << "\n\033[36m========================================\033[0m\n";
         std::cout << "\033[1;36m   VIDEO GAME MANAGEMENT SYSTEM   \033[0m\n";
         std::cout << "\033[36m========================================\033[0m\n";
