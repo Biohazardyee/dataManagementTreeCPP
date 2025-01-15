@@ -319,48 +319,34 @@ public:
     }
 
     // Helper function to load games from file into the tree
-    void loadFromFile(const std::string &filename)
-    {
+    void loadFromFile(const std::string& filename) {
         std::ifstream file(filename);
-
-        if (!file)
-        {
+        if (!file) {
             std::cerr << "Error opening file: " << filename << std::endl;
             return;
         }
 
         int id, year;
-        std::string name, genre, ageRating;
         float price;
-        int highestId = 0;
+        std::string name, genre, ageRating;
+        int count = 0;  // To track number of games loaded
 
-        while (file >> id)
-        {
-            file.ignore(); // Ignore the tab or space after ID
-            std::getline(file, name, '\t');
-            file >> year;
-            file.ignore(); // Ignore tab
-            std::getline(file, genre, '\t');
-            file >> price;
-            file.ignore(); // Ignore tab
-            std::getline(file, ageRating);
-
+        while (file >> id) {
+            std::getline(file >> std::ws, name, '\t');   // Read name until tab
+            file >> year >> genre >> price >> ageRating;  // Read other values
             VideoGame game(name, year, genre, price, ageRating, id);
             insert(game);
-
-            // Update highest ID found
-            if (id > highestId)
-            {
-                highestId = id;
-            }
+            count++;
         }
 
-        // Update static video game count to avoid ID conflicts
-        VideoGame::setVideoGameCount(highestId);
-
-        file.close();
-        std::cout << "\033[1;32mGames loaded successfully from the file!\033[0m\n";
+        if (count == 0) {
+            std::cout << "No games were loaded. Check if the file is empty or incorrectly formatted.\n";
+        } else {
+            std::cout << "Games loaded from file successfully! Total games loaded: " << count << "\n";
+        }
     }
+
+
 };
 
 #endif

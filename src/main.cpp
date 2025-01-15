@@ -1,11 +1,12 @@
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include "tree.hpp"
 #include "videogame.hpp"
 
 // Function to load games from the file into the tree
 void loadGamesFromFile(AVLTree &tree) {
-    tree.loadFromFile("videogames.txt");
+    tree.loadFromFile("VideoGames.txt");
 }
 
 // Function to add a new video game
