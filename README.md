@@ -19,8 +19,16 @@ After that, you can navigate to the folder where you extracted the files and ope
 
 To run the program you need to have the `g++` compiler installed on your machine. If you don't have it, you can install it by running the following command:
 
+**On Linux**
+
 ```bash
 sudo apt install g++
+```
+
+**On MacOS**
+
+```
+brew install g++
 ```
 
 After that, you can run the following command to compile the program:
